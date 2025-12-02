@@ -30,20 +30,28 @@ export PATH=/QOpenSys/pkgs/bin:$PATH
 ```bash
 mkdir -p /home/blog/gemini
 cd /home/blog/gemini
-
-# ファイルを配置
-# - analyze.py
-# - run_analyze.sh
-# - pyproject.toml
-# - .env
-# - vertex-ai-credentials.json
 ```
+
+以下のファイルを `/home/blog/gemini/` に配置：
+
+- `analyze.py` - メインスクリプト
+- `run_analyze.sh` - シェルスクリプト
+- `pyproject.toml` - Python設定
+- `ANALYZE.CMD` - コマンド定義
+- `ANALYZE.CLLE` - CLプログラムソース
+- `.env` - 環境設定 ※ .env.examplesを参考に作成してください
+- `vertex-ai-credentials.json` - GCP認証情報
+- `create_gemini.sql` - GEMINIテーブル作成SQL ※APIBRIDGE用のダミーテーブル
+- `create_sales.sql` - SALESテーブル作成SQL
+- `insert_sales.sql` - サンプルデータ投入SQL
+> vertex-ai-credentials.jsonは別途用意してください
 
 ### 3. venv作成
 
 ```bash
 cd /home/blog/gemini
 
+# Pythonの実行環境作成
 # システムパッケージを継承する .venv を作成（pyodbc用）
 python -m venv .venv --system-site-packages
 
@@ -101,50 +109,43 @@ SELECT * FROM QTEMP.GEMINI ORDER BY SEQ
 
 ```sql
 QTEMP.GEMINI (
-    SEQ INT,           -- 行番号
-    RESULT VARCHAR(2048) CCSID 1208  -- 結果テキスト
+    SEQ INT,                          -- 行番号
+    RESULT VARCHAR(2048) CCSID 1208   -- 結果テキスト
 )
 ```
+> 同じレイアウトのsqlはcreate_gemini.sqlに書かれています。物理が必要な場合はそちらを利用してください
 
 ## サンプルデータの投入
 
 ### 1. テーブル作成
 
-```sql
-CREATE OR REPLACE TABLE YOURLIB.SALES (
-    SALEDATE DATE,
-    ITEMCD VARCHAR(10) CCSID 1208,
-    ITEMNAME VARCHAR(50) CCSID 1208,
-    QTY INT,
-    PRICE INT,
-    AMOUNT INT,
-    CUSTOMER VARCHAR(50) CCSID 1208,
-    REGION VARCHAR(20) CCSID 1208,
-    STAFF VARCHAR(20) CCSID 1208
-);
+IFSに`create_sales.sql`を配置し、CCSIDを設定後、実行：
+> SQLに書かれているライブラリ名は変更してください
 
-LABEL ON COLUMN YOURLIB.SALES (
-    SALEDATE IS '日付',
-    ITEMCD IS '商品コード',
-    ITEMNAME IS '商品名',
-    QTY IS '数量',
-    PRICE IS '単価',
-    AMOUNT IS '金額',
-    CUSTOMER IS '顧客名',
-    REGION IS '地域',
-    STAFF IS '担当者'
-);
+```bash
+setccsid 1208 /home/blog/gemini/create_sales.sql
 ```
 
-### 2. CSVを投入
+```
+RUNSQLSTM SRCSTMF('/home/blog/gemini/create_sales.sql') COMMIT(*NONE)
+```
 
-CSVをIFSに配置後：
+### 2. データ投入
+
+IFSに`insert_sales.sql`を配置し、CCSIDを設定後、実行：
+> SQLに書かれているライブラリ名は変更してください
+
+```bash
+setccsid 1208 /home/blog/gemini/insert_sales.sql
+```
 
 ```
-CPYFRMIMPF FROMSTMF('/home/blog/gemini/sample_sales.csv') TOFILE(YOURLIB/SALES) RCDDLM(*CRLF) STRDLM(*NONE) FLDDLM(',') RMVBLANK(*TRAILING) FROMRCD(2)
+RUNSQLSTM SRCSTMF('/home/blog/gemini/insert_sales.sql') COMMIT(*NONE)
 ```
 
 ## 注意事項
 
 - APIタイムアウト: 2分
 - エラー発生時はエラーメッセージがQTEMP.GEMINIに格納されます
+- IFSファイルのCCSIDは1208（UTF-8）に設定してください
+- analyze.pyでは出力されるデータは5000件を上限にしています。必要なら増やしてください
