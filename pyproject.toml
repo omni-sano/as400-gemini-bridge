@@ -1,0 +1,17 @@
+[project]
+name = "as400-gemini-bridge"
+version = "0.1.0"
+description = "AS/400 data analysis with Gemini API"
+requires-python = ">=3.9"
+dependencies = [
+    "requests",
+    "PyJWT[crypto]",
+    "python-dotenv",
+]
+
+[project.scripts]
+analyze = "analyze:main"
+analyze-csv = "analyze_csv:main"
+
+[tool.setuptools]
+py-modules = ["analyze", "analyze_csv"]
