@@ -14,6 +14,7 @@ AS/400（IBM i）のデータをVertex AI Gemini APIで分析するツール。
 ### 1. 事前準備（yum）
 
 ```bash
+# [QP2TERM]
 yum install python39 python39-pip python39-pyodbc unixODBC ibm-iaccess
 ```
 > Pythonのバージョンは3.9以上ならお好みのバージョンに変更してください
@@ -21,6 +22,7 @@ yum install python39 python39-pip python39-pyodbc unixODBC ibm-iaccess
 PATHを通す：
 
 ```bash
+# [QP2TERM]
 export PATH=/QOpenSys/pkgs/bin:$PATH
 ```
 > すでに設定されているなら不要です
@@ -28,6 +30,7 @@ export PATH=/QOpenSys/pkgs/bin:$PATH
 ### 2. プログラム配置
 
 ```bash
+# [QP2TERM]
 mkdir -p /home/blog/gemini
 cd /home/blog/gemini
 ```
@@ -49,6 +52,7 @@ cd /home/blog/gemini
 ### 3. venv作成
 
 ```bash
+# [QP2TERM]
 cd /home/blog/gemini
 
 # Pythonの実行環境作成
@@ -82,6 +86,7 @@ ODBC_CONNECTION=DSN=*LOCAL
 ### 5. シェルスクリプトに実行権限付与
 
 ```bash
+# [QP2TERM]
 chmod +x /home/blog/gemini/run_analyze.sh
 ```
 
@@ -138,6 +143,7 @@ IFSに`create_sales.sql`を配置し、CCSIDを設定後、実行：
 > SQLに書かれているライブラリ名は変更してください
 
 ```bash
+# [QP2TERM]
 setccsid 1208 /home/blog/gemini/create_sales.sql
 ```
 
@@ -151,6 +157,7 @@ IFSに`insert_sales.sql`を配置し、CCSIDを設定後、実行：
 > SQLに書かれているライブラリ名は変更してください
 
 ```bash
+# [QP2TERM]
 setccsid 1208 /home/blog/gemini/insert_sales.sql
 ```
 
