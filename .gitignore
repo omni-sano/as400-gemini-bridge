@@ -4,6 +4,10 @@ __pycache__/
 *.egg-info/
 .venv/
 
+# Claude code
+.claude/
+CLAUDE.md
+
 # 環境設定・認証情報
 .env
 vertex-ai-credentials.json
