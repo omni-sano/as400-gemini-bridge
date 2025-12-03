@@ -52,6 +52,7 @@ def call_gemini(access_token, project_id, region, model, prompt):
         }]
     }
 
+    # google-genai が使うパッケージにRustコンパイルが必要なものがあるため、直接REST APIを呼び出しています
     try:
         resp = requests.post(url, headers=headers, json=body, timeout=120)
     except requests.exceptions.Timeout:
@@ -86,6 +87,7 @@ def get_column_labels(cursor, lib, table):
         ORDER BY ORDINAL_POSITION
     ''', (lib.upper(), table.upper()))
 
+    # CSVのカラムラベル取得
     labels = {}
     for row in cursor.fetchall():
         col_name = row[0]
