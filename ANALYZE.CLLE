@@ -12,12 +12,14 @@ DCL VAR(&Q)         TYPE(*CHAR) LEN(200)
 RTVJOBA NBR(&JOBNBR)
 RTVSYSVAL SYSVAL(QDATETIME) RTNVAR(&TIMESTAMP)
 
+/* 出力ファイルはJOBIDとタイムスタンプをつけ衝突しないようにする */
 CHGVAR VAR(&OUTPUT) VALUE('/tmp/gemini_' *TCAT &JOBNBR +
   *TCAT '_' *TCAT %SST(&TIMESTAMP 1 14) *TCAT '.txt')
 
 CHGVAR VAR(&T) VALUE(%TRIM(&P_TABLE))
 CHGVAR VAR(&Q) VALUE(%TRIM(&P_QUESTION))
 
+/* 分析プログラムを実行 */
 CHGVAR VAR(&CMD) VALUE('/home/blog/gemini/run_analyze.sh "' *TCAT +
   &T *TCAT '" "' *TCAT +
   &Q *TCAT '" "' *TCAT +
@@ -25,7 +27,7 @@ CHGVAR VAR(&CMD) VALUE('/home/blog/gemini/run_analyze.sh "' *TCAT +
 
 QSH CMD(&CMD)
 
-/* ソース物理ファイル作成 */
+/* 出力データ一時格納用のソース物理ファイル作成 */
 DLTF FILE(QTEMP/GEMINISRC)
 MONMSG MSGID(CPF2105)
 CRTSRCPF FILE(QTEMP/GEMINISRC) RCDLEN(2048) CCSID(1208)
